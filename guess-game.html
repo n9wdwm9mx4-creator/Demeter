@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>希臘神話猜謎遊戲</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        nav {
+            margin-top: 1rem;
+        }
+
+        .home-btn {
+            background: white;
+            color: #f5576c;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .home-btn:hover {
+            background: #f5576c;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .question-container {
+            margin: 2rem 0;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .feedback.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .next-btn.show {
+            display: inline-block;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .game-over {
+            text-align: center;
+            display: none;
+        }
+
+        .game-over.show {
+            display: block;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #667eea;
+            margin: 2rem 0;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .game-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .question {
+                font-size: 1.2rem;
+            }
+
+            .option-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 希臘神話猜謎遊戲 🏛️</h1>
+        <nav>
+            <a href="index.html" class="home-btn">← 返回首頁</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">題目</div>
+                    <div class="score-value" id="question-number">1/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">得分</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question-container">
+                <div class="question" id="question">載入中...</div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="next-btn" id="next-btn">下一題 →</button>
+            </div>
+
+            <div class="game-over" id="game-over">
+                <h2 style="color: #667eea; font-size: 2rem; margin-bottom: 1rem;">🎉 遊戲結束! 🎉</h2>
+                <div class="final-score" id="final-score"></div>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;" id="final-message"></p>
+                <button class="restart-btn" onclick="restartGame()">再玩一次</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 希臘神話世界 | 測試你的神話知識</p>
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                question: "誰是希臘神話中的眾神之王?",
+                options: ["宙斯", "波塞頓", "黑帝斯", "阿波羅"],
+                correct: 0
+            },
+            {
+                question: "波瑟芬妮的母親是誰?",
+                options: ["雅典娜", "阿芙蘿黛蒂", "狄蜜特", "赫拉"],
+                correct: 2
+            },
+            {
+                question: "誰是智慧女神?",
+                options: ["雅典娜", "赫拉", "阿提米絲", "赫斯提亞"],
+                correct: 0
+            },
+            {
+                question: "海神波塞頓的武器是什麼?",
+                options: ["雷霆", "三叉戟", "弓箭", "盾牌"],
+                correct: 1
+            },
+            {
+                question: "波瑟芬妮在冥界吃了什麼而無法完全離開?",
+                options: ["蘋果", "葡萄", "石榴", "無花果"],
+                correct: 2
+            },
+            {
+                question: "誰是太陽神?",
+                options: ["阿瑞斯", "赫密斯", "阿波羅", "狄俄倪索斯"],
+                correct: 2
+            },
+            {
+                question: "誰殺死了蛇髮女妖梅杜莎?",
+                options: ["海克力士", "柏修斯", "特修斯", "阿奇里斯"],
+                correct: 1
+            },
+            {
+                question: "特洛伊戰爭的起因是因為誰?",
+                options: ["海倫", "佩涅羅珀", "安蒂岡妮", "伊菲革涅亞"],
+                correct: 0
+            },
+            {
+                question: "誰是戰神?",
+                options: ["阿波羅", "赫菲斯托斯", "阿瑞斯", "赫密斯"],
+                correct: 2
+            },
+            {
+                question: "奧林帕斯山上有多少位主神?",
+                options: ["10位", "12位", "15位", "20位"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question').textContent = q.question;
+            document.getElementById('question-number').textContent = `${currentQuestion + 1}/${questions.length}`;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('next-btn').classList.remove('show');
+        }
+
+        function selectAnswer(index) {
+            if (selectedAnswer !== null) return;
+            
+            selectedAnswer = index;
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (index === q.correct) {
+                buttons[index].classList.add('correct');
+                feedback.className = 'feedback correct show';
+                feedback.textContent = '🎉 答對了!太棒了!';
+                score += 10;
+                document.getElementById('score').textContent = score;
+            } else {
+                buttons[index].classList.add('wrong');
+                buttons[q.correct].classList.add('correct');
+                feedback.className = 'feedback wrong show';
+                feedback.textContent = `❌ 答錯了!正確答案是:${q.options[q.correct]}`;
+            }
+            
+            document.getElementById('next-btn').classList.add('show');
+        }
+
+        document.getElementById('next-btn').onclick = function() {
+            currentQuestion++;
+            selectedAnswer = null;
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showGameOver();
+            }
+        };
+
+        function showGameOver() {
+            document.getElementById('question-container').style.display = 'none';
+            document.getElementById('game-over').classList.add('show');
+            document.getElementById('final-score').textContent = `${score} / ${questions.length * 10}`;
+            
+            let message = '';
+            const percentage = (score / (questions.length * 10)) * 100;
+            
+            if (percentage === 100) {
+                message = '完美!你是希臘神話大師! 🏆';
+            } else if (percentage >= 80) {
+                message = '太棒了!你對希臘神話非常了解! 🌟';
+            } else if (percentage >= 60) {
+                message = '不錯!繼續學習會更好! 📚';
+            } else if (percentage >= 40) {
+                message = '還不錯,但還有進步空間! 💪';
+            } else {
+                message = '加油!多讀讀希臘神話故事吧! 📖';
+            }
+            
+            document.getElementById('final-message').textContent = message;
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            document.getElementById('score').textContent = score;
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('game-over').classList.remove('show');
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
